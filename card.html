@@ -1,0 +1,106 @@
+<template>
+<style>
+    .card {
+        background: #fff;
+        border-radius: 2px;
+        display: block;
+        float: left;
+        height: 300px;
+        margin: 1rem;
+        overflow: auto;
+        width: 300px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+    .card-header {
+        color: white;
+        text-align: center;
+        padding-top: 10px;
+        height: 48px;
+        background: rgb(0, 53, 129);
+        font-size: 150%;
+        margin-bottom: 20px;
+    }
+</style>
+    <div class="card">
+        <div class="card-header">
+        </div>
+        <div id="card-data">
+
+        </div>
+    </div>
+</template>
+
+<script>
+    (function(window, document, undefined) {
+
+        // Refers to the "importer", which is index.html
+        var thatDoc = document;
+        // Refers to the "importee", which is src/hello-world.html
+        var thisDoc =  (thatDoc._currentScript || thatDoc.currentScript).ownerDocument;
+        // Gets content from <template>
+        var template = thisDoc.querySelector('template').content;
+        // Creates an object based in the HTML Element prototype
+        var element = Object.create(HTMLElement.prototype);
+        element.header = 'Header';
+        element.shadowRoot = null;
+        element.save = function (){};
+        element.data = [];
+
+        // Fires when an instance of the element is created
+        element.createdCallback = function() {
+            // Creates the shadow root
+            // Adds a template clone into shadow root
+            var clone = thatDoc.importNode(template, true);
+            this.shadowRoot = this.createShadowRoot();
+            this.shadowRoot.appendChild(clone);
+
+            if (this.hasAttribute('header')) {
+                this.setHeader(this.getAttribute('header'));
+            } else {
+                this.setHeader(this.header);
+            }
+
+
+            if (this.getAttribute('save') !== undefined) {
+                this.save = new Function(this.getAttribute('save'))
+            }
+
+            if (this.getAttribute('data') !== undefined) {
+                this.data =eval(this.getAttribute('data'));
+                this.fillData();
+            }
+        };
+        // Fires when an instance was inserted into the document
+        element.attachedCallback = function() { };
+        // Fires when an instance was removed from the document
+        element.detachedCallback = function() {};
+        // Fires when an attribute was added, removed, or updated
+        element.attributeChangedCallback = function(attr, oldVal, newVal) {
+            switch (attr) {
+                case 'header':
+                    this.setHeader(newVal);
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        element.setHeader = function(val) {
+            this.header = val;
+            var headerText = this.shadowRoot.querySelector('.card-header');
+            headerText.textContent = val;
+        };
+
+        element.fillData = function(){
+            var d = this.shadowRoot.querySelector("#card-data");
+            for (var i = 0; i < this.data.length; i++) {
+                d.innerHTML = d.innerHTML +
+                        ('<div data-id="' + this.data[i].id + '">' + this.data[i].label + ':' + this.data[i].value);
+            }
+        }
+        // Registers <concrete-card> in the main document
+        window.MyElement = thatDoc.registerElement('el-card', {
+            prototype: element
+        });
+    }(window, document));
+</script>
