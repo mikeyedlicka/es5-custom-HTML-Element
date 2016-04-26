@@ -1,26 +1,36 @@
 <template>
-<style>
-    .card {
-        background: #fff;
-        border-radius: 2px;
-        display: block;
-        float: left;
-        height: 300px;
-        margin: 1rem;
-        overflow: auto;
-        width: 300px;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    }
-    .card-header {
-        color: white;
-        text-align: center;
-        padding-top: 10px;
-        height: 48px;
-        background: rgb(0, 53, 129);
-        font-size: 150%;
-        margin-bottom: 20px;
-    }
-</style>
+    <style>
+        input.card-result_readonly{
+            border: transparent;
+            background-color:transparent;
+            box-shadow:  none;
+            -webkit-box-shadow: none;
+            cursor: pointer;
+        }
+        input.card-result:focus {
+            outline-color: #9f8bab;
+        }
+        .card {
+            background: #fff;
+            border-radius: 2px;
+            display: block;
+            float: left;
+            height: 300px;
+            margin: 1rem;
+            overflow: auto;
+            width: 300px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+        .card-header {
+            color: white;
+            text-align: center;
+            padding-top: 10px;
+            height: 48px;
+            background: rgb(0, 53, 129);
+            font-size: 150%;
+            margin-bottom: 20px;
+        }
+    </style>
     <div class="card">
         <div class="card-header">
         </div>
@@ -94,10 +104,26 @@
         element.fillData = function(){
             var d = this.shadowRoot.querySelector("#card-data");
             for (var i = 0; i < this.data.length; i++) {
-                d.innerHTML = d.innerHTML +
-                        ('<div data-id="' + this.data[i].id + '">' + this.data[i].label + ':' + this.data[i].value);
+                var div = document.createElement('div');
+                div.id = this.data[i].id;
+
+                var span = document.createElement("span");
+                span.innerHTML = this.data[i].label + ":";
+
+                var input = document.createElement('input');
+                input.className = "card-result_readonly";
+                input.type = "text";
+                input.value = this.data[i].value;
+                if (typeof(this.save) === 'function') {
+                    input.onblur = this.save;
+                }
+
+
+                div.appendChild(span).appendChild(input);
+                d.appendChild(div);
             }
-        }
+        };
+
         // Registers <el-card> in the main document
         window.MyElement = thatDoc.registerElement('el-card', {
             prototype: element
