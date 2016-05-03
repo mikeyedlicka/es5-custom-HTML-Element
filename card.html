@@ -103,24 +103,26 @@
 
         element.fillData = function(){
             var d = this.shadowRoot.querySelector("#card-data");
-            for (var i = 0; i < this.data.length; i++) {
-                var div = document.createElement('div');
-                div.id = this.data[i].id;
+            if (this.data !== null) {
+                for (var i = 0; i < this.data.length; i++) {
+                    var div = document.createElement('div');
+                    div.id = this.data[i].id;
 
-                var span = document.createElement("span");
-                span.innerHTML = this.data[i].label + ":";
+                    var span = document.createElement("span");
+                    span.innerHTML = this.data[i].label + ":";
 
-                var input = document.createElement('input');
-                input.className = "card-result_readonly";
-                input.type = "text";
-                input.value = this.data[i].value;
-                if (typeof(this.save) === 'function') {
-                    input.onblur = this.save;
+                    var input = document.createElement('input');
+                    input.className = "card-result_readonly";
+                    input.type = "text";
+                    input.value = this.data[i].value;
+                    if (typeof(this.save) === 'function') {
+                        input.onblur = this.save;
+                    }
+
+
+                    div.appendChild(span).appendChild(input);
+                    d.appendChild(div);
                 }
-
-
-                div.appendChild(span).appendChild(input);
-                d.appendChild(div);
             }
         };
 
